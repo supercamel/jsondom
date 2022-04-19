@@ -284,7 +284,9 @@ JsonDomNode* json_dom_parse_object(const char** pstr)
 {
     const char* str = *pstr;
     JsonDomNode* node = json_dom_node_new();
+
     json_dom_node_set_object(node);
+
     do {
         str = chug(str);
         if(*str != '"') {
@@ -326,7 +328,8 @@ JsonDomNode* json_dom_parse(const char* str) {
     str = chug(str);
     if(*str == '{') {
         str++;
-        return json_dom_parse_object(&str);
+        JsonDomNode* obj = json_dom_parse_object(&str);
+        return obj;
     }
     return 0;
 }

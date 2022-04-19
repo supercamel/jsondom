@@ -3,8 +3,8 @@
 
 #include "dom_node.h"
 
-#define SLIST_MAX_LEVELS 5
-#define SLIST_P 0.18
+#define SLIST_MAX_LEVELS 5 
+#define SLIST_P 0.21
 
 
 /**
@@ -72,13 +72,13 @@ typedef struct _JsonDomSList {
  * json_dom_slist_node_next: gets the next node in the list
  * Returns: (transfer none): the next node
  */
-const JsonDomSListNode* json_dom_slist_node_next(JsonDomSListNode* self);
+const JsonDomSListNode* json_dom_slist_node_next(const JsonDomSListNode* self);
 
 /**
  * json_dom_slist_node_prev: gets the previous node in the list
  * Returns: (transfer none): the prior node
  */
-const JsonDomSListNode* json_dom_slist_node_prev(JsonDomSListNode* self);
+const JsonDomSListNode* json_dom_slist_node_prev(const JsonDomSListNode* self);
 
 /**
  * json_dom_slist_new: create a new skip list

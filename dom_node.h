@@ -59,35 +59,36 @@ void json_dom_node_set_string(JsonDomNode* self, const char* value);
 void json_dom_node_set_null(JsonDomNode* self);
 unsigned int json_dom_node_set_string_escaped(JsonDomNode* self, const char* value);
 
-JsonDomNodeType json_dom_node_get_type(JsonDomNode* self);
-int json_dom_node_get_int(JsonDomNode* self);
-unsigned int json_dom_node_get_uint(JsonDomNode* self);
-bool json_dom_node_get_bool(JsonDomNode* self);
-double json_dom_node_get_double(JsonDomNode* self);
-const char* json_dom_node_get_string(JsonDomNode* self);
+JsonDomNodeType json_dom_node_get_type(const JsonDomNode* self);
+int json_dom_node_get_int(const JsonDomNode* self);
+unsigned int json_dom_node_get_uint(const JsonDomNode* self);
+bool json_dom_node_get_bool(const JsonDomNode* self);
+double json_dom_node_get_double(const JsonDomNode* self);
+const char* json_dom_node_get_string(const JsonDomNode* self);
 
 
 
 
 void            json_dom_node_set_int_member(JsonDomNode* self, JsonDomKey key, int value);
-int             json_dom_node_get_int_member(JsonDomNode* self, JsonDomKey key);
+int             json_dom_node_get_int_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, unsigned int value);
-unsigned int    json_dom_node_get_uint_member(JsonDomNode* self, JsonDomKey key);
+unsigned int    json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_bool_member(JsonDomNode* self, JsonDomKey key, bool value);
-bool            json_dom_node_get_bool_member(JsonDomNode* self, JsonDomKey key);
+bool            json_dom_node_get_bool_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_string_member(JsonDomNode* self, JsonDomKey key, const char* value);
 unsigned int    json_dom_node_set_string_member_escaped(JsonDomNode* self, JsonDomKey key, const char* value);
-const char*     json_dom_node_get_string_member(JsonDomNode* self, JsonDomKey key);
+const char*     json_dom_node_get_string_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_double_member(JsonDomNode* self, JsonDomKey key, double value);
-double          json_dom_node_get_double_member(JsonDomNode* self, JsonDomKey key);
+double          json_dom_node_get_double_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_member(JsonDomNode* self, JsonDomKey key, JsonDomNode* other);
-const JsonDomNode* json_dom_node_get_member(JsonDomNode* self, JsonDomKey key);
+const JsonDomNode* json_dom_node_get_member(const JsonDomNode* self, JsonDomKey key);
+bool            json_dom_node_has_member(const JsonDomNode* self, JsonDomKey key);
 
 void json_dom_node_push_back(JsonDomNode* self, JsonDomNode* other);
 void json_dom_node_pop_back(JsonDomNode* self);
-const JsonDomNode* json_dom_node_get_index(JsonDomNode* self, unsigned int idx);
+const JsonDomNode* json_dom_node_get_index(const JsonDomNode* self, unsigned int idx);
 
-char* json_dom_node_stringify(JsonDomNode* self, JsonStringBuilder* builder);
+char* json_dom_node_stringify(const JsonDomNode* self, JsonStringBuilder* builder);
 
 #endif
 

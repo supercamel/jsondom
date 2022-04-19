@@ -14,12 +14,12 @@ static int random_level() {
     return lvl;
 }
 
-const JsonDomSListNode* json_dom_slist_node_next(JsonDomSListNode* self) 
+const JsonDomSListNode* json_dom_slist_node_next(const JsonDomSListNode* self) 
 {
     return self->next[0];
 }
 
-const JsonDomSListNode* json_dom_slist_node_prev(JsonDomSListNode* self)
+const JsonDomSListNode* json_dom_slist_node_prev(const JsonDomSListNode* self)
 {
     return self->prev[0];
 }
@@ -29,8 +29,10 @@ JsonDomSListNode* json_dom_slist_node_new(void* payload, int level)
     JsonDomAllocator* alloc = json_dom_node_get_allocator();
     JsonDomSListNode* node = json_dom_allocator_alloc_chunk(alloc);
     node->payload = payload;
-    for(int i = 0; i < SLIST_MAX_LEVELS; i++) {
+
+    for(int i = 0; i < SLIST_MAX_LEVELS+1; i++) {
         node->next[i] = 0;
+        node->prev[i] = 0;
         node->width[i] = 0;
     }
     return node;
@@ -60,16 +62,20 @@ void json_dom_slist_insert(JsonDomSList* self, void* payload, int (*compare)(voi
 {
     // create the new node
     int rlevel = random_level();
+
     JsonDomSListNode* node = json_dom_slist_node_new(payload, rlevel);
+
+    
 
     // figure out where to insert it
     JsonDomSListNode* iter = self->head;
-    int level = SLIST_MAX_LEVELS-1;
 
-    for(int level = SLIST_MAX_LEVELS-1; level >= 0; level--)
+    for(int level = SLIST_MAX_LEVELS; level >= 0; level--)
     {
+        node->next[level] = self->tail;
+        node->prev[level] = self->head;
         // if the new payload is less than the next
-        while(iter->next[level]->payload && (compare(payload, iter->next[level]->payload, usrptr) < 0)) {
+        while(iter->next[level]->payload && (compare(payload, iter->next[level]->payload, usrptr) > 0)) {
             // skip along
             iter = iter->next[level];
         }
@@ -82,9 +88,10 @@ void json_dom_slist_insert(JsonDomSList* self, void* payload, int (*compare)(voi
         node->prev[i] = iter;
 
     }
-    for(int i = 0; i < SLIST_MAX_LEVELS; i++) {
+    for(int i = 0; i < SLIST_MAX_LEVELS-1; i++) {
         self->tail->prev[i]->width[i]++;
     }
+    self->length++;
 }
 
 
@@ -98,7 +105,7 @@ json_dom_slist_find_first(JsonDomSList* self, void* data, int (*compare)(void*, 
     for(int level = SLIST_MAX_LEVELS-1; level >= 0; level--)
     {
         // if the new payload is less than the next
-        while(iter->next[level]->payload && (compare(data, iter->next[level]->payload, usrptr) < 0)) {
+        while(iter->next[level]->payload && (compare(data, iter->next[level]->payload, usrptr) > 0)) {
             // skip along
             iter = iter->next[level];
         }
@@ -117,7 +124,7 @@ json_dom_slist_find_last(JsonDomSList* self, void* data, int (*compare)(void*, v
     for(int level = SLIST_MAX_LEVELS-1; level >= 0; level--)
     {
         // if the new payload is less than the next
-        while(iter->next[level]->payload && (compare(data, iter->next[level]->payload, usrptr) <= 0)) {
+        while(iter->next[level]->payload && (compare(data, iter->next[level]->payload, usrptr) >= 0)) {
             // skip along
             iter = iter->next[level];
         }
@@ -151,6 +158,8 @@ void json_dom_slist_append(JsonDomSList* self, void* payload)
 
 const JsonDomSListNode* json_dom_slist_begin(JsonDomSList* self)
 {
+    printf("self->head: %i\n", self->head);
+    printf("self->head->next[0]: %i\n", self->head->next[0]);
     return self->head->next[0];
 }
 

@@ -70,11 +70,11 @@ uint32_t fnv1a_str(const char *str)
 
 static bool compare_keys(JsonDomKey k1, JsonDomKey k2) 
 {
-//    if(k1.hash == k2.hash) {
+    if(k1.hash == k2.hash) {
         if(strcmp(k1.value, k2.value) == 0) {
             return true;
         }
-//    }
+    }
     return false;
 }
 
@@ -295,41 +295,42 @@ unsigned int json_dom_node_set_string_escaped(JsonDomNode* self, const char* val
 {
     free_object(self);
     self->type = JSON_DOM_NODE_TYPE_STRING;
-    self->value.str = json_dom_allocator_alloc(alloc, strlen(value));
+    self->value.str = json_dom_allocator_alloc(alloc, strlen(value+1));
     unsigned int len = 0;
     while((*value != '\0') && (*value != '"')) {
         char c = json_string_unescape_next(&value);
         self->value.str[len++] = c;
     }
+    self->value.str[len] = '\0';
     return len;
 }
 
-JsonDomNodeType json_dom_node_get_type(JsonDomNode* self)
+JsonDomNodeType json_dom_node_get_type(const JsonDomNode* self)
 {
     return self->type;
 }
 
-int json_dom_node_get_int(JsonDomNode* self)
+int json_dom_node_get_int(const JsonDomNode* self)
 {
     return self->value.i;
 }
 
-unsigned int json_dom_node_get_uint(JsonDomNode* self)
+unsigned int json_dom_node_get_uint(const JsonDomNode* self)
 {
     return self->value.u;
 }
 
-bool json_dom_node_get_bool(JsonDomNode* self)
+bool json_dom_node_get_bool(const JsonDomNode* self)
 {
     return self->value.b;
 }
 
-double json_dom_node_get_double(JsonDomNode* self)
+double json_dom_node_get_double(const JsonDomNode* self)
 {
     return self->value.d;
 }
 
-const char* json_dom_node_get_string(JsonDomNode* self)
+const char* json_dom_node_get_string(const JsonDomNode* self)
 {
     return self->value.str;
 }
@@ -371,7 +372,7 @@ void json_dom_node_set_int_member(JsonDomNode* self, JsonDomKey key, int value)
     self->value.head.length++;
 }
 
-int json_dom_node_get_int_member(JsonDomNode* self, JsonDomKey key)
+int json_dom_node_get_int_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -406,7 +407,7 @@ void json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, unsigned i
     self->value.head.length++;
 }
 
-unsigned int json_dom_node_get_uint_member(JsonDomNode* self, JsonDomKey key)
+unsigned int json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -441,7 +442,7 @@ void json_dom_node_set_double_member(JsonDomNode* self, JsonDomKey key, double v
     self->value.head.length++;
 }
 
-double json_dom_node_get_double_member(JsonDomNode* self, JsonDomKey key)
+double json_dom_node_get_double_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -477,7 +478,7 @@ void json_dom_node_set_bool_member(JsonDomNode* self, JsonDomKey key, bool value
     self->value.head.length++;
 }
 
-bool json_dom_node_get_bool_member(JsonDomNode* self, JsonDomKey key)
+bool json_dom_node_get_bool_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -537,7 +538,7 @@ unsigned int json_dom_node_set_string_member_escaped(JsonDomNode* self, JsonDomK
     return len;
 }
 
-const char* json_dom_node_get_string_member(JsonDomNode* self, JsonDomKey key)
+const char* json_dom_node_get_string_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -549,7 +550,7 @@ const char* json_dom_node_get_string_member(JsonDomNode* self, JsonDomKey key)
     return false;
 }
 
-const JsonDomNode* json_dom_node_get_member(JsonDomNode* self, JsonDomKey key) 
+const JsonDomNode* json_dom_node_get_member(const JsonDomNode* self, JsonDomKey key) 
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
@@ -561,6 +562,17 @@ const JsonDomNode* json_dom_node_get_member(JsonDomNode* self, JsonDomKey key)
     return 0;
 }
 
+bool json_dom_node_has_member(const JsonDomNode* self, JsonDomKey key)
+{
+    JsonDomMemberNode* iter = self->value.head.first;
+    while(iter != 0) {
+        if(compare_keys(iter->key, key)) {
+            return true;
+        }
+        iter = iter->next;
+    }
+    return false;
+}
 
 void json_dom_node_set_null_member(JsonDomNode* self, JsonDomKey key) 
 {
@@ -681,7 +693,7 @@ void json_dom_node_push_front(JsonDomNode* self, JsonDomNode* other)
 }
 
 
-const JsonDomNode* json_dom_node_get_index(JsonDomNode* self, unsigned int idx)
+const JsonDomNode* json_dom_node_get_index(const JsonDomNode* self, unsigned int idx)
 {
     JsonDomValueNode* iter = self->value.head.first;
     while(iter) {
@@ -694,7 +706,7 @@ const JsonDomNode* json_dom_node_get_index(JsonDomNode* self, unsigned int idx)
     return 0;
 }
 
-char* json_dom_node_stringify(JsonDomNode* self, JsonStringBuilder* builder)
+char* json_dom_node_stringify(const JsonDomNode* self, JsonStringBuilder* builder)
 {
     switch(self->type) {
         case JSON_DOM_NODE_TYPE_OBJECT:
