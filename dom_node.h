@@ -52,7 +52,7 @@ void json_dom_node_delete(JsonDomNode* self);
 void json_dom_node_set_object(JsonDomNode* self);
 void json_dom_node_set_array(JsonDomNode* self);
 void json_dom_node_set_int(JsonDomNode* self, int value);
-void json_dom_node_set_uint(JsonDomNode* self, unsigned int value);
+void json_dom_node_set_uint(JsonDomNode* self, uint64_t value);
 void json_dom_node_set_bool(JsonDomNode* self, bool value);
 void json_dom_node_set_double(JsonDomNode* self, double value);
 void json_dom_node_set_string(JsonDomNode* self, const char* value);
@@ -61,7 +61,7 @@ unsigned int json_dom_node_set_string_escaped(JsonDomNode* self, const char* val
 
 JsonDomNodeType json_dom_node_get_type(const JsonDomNode* self);
 int json_dom_node_get_int(const JsonDomNode* self);
-unsigned int json_dom_node_get_uint(const JsonDomNode* self);
+uint64_t json_dom_node_get_uint(const JsonDomNode* self);
 bool json_dom_node_get_bool(const JsonDomNode* self);
 double json_dom_node_get_double(const JsonDomNode* self);
 const char* json_dom_node_get_string(const JsonDomNode* self);
@@ -71,8 +71,8 @@ const char* json_dom_node_get_string(const JsonDomNode* self);
 
 void            json_dom_node_set_int_member(JsonDomNode* self, JsonDomKey key, int value);
 int             json_dom_node_get_int_member(const JsonDomNode* self, JsonDomKey key);
-void            json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, unsigned int value);
-unsigned int    json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key);
+void            json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, uint64_t value);
+uint64_t        json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_bool_member(JsonDomNode* self, JsonDomKey key, bool value);
 bool            json_dom_node_get_bool_member(const JsonDomNode* self, JsonDomKey key);
 void            json_dom_node_set_string_member(JsonDomNode* self, JsonDomKey key, const char* value);

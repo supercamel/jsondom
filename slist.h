@@ -9,19 +9,11 @@
 
 
 /**
- * Skip List
  *
  * This is an indexed double linked skip list.
  *
  * Skip lists are like linked lists only they have multiple links to other nodes. 
  * The additional links skip over nodes which enables the list to be traversed quickly. 
- *
- * This implementation is indexed, meaning the number of nodes that each hop skips is known and this makes
- * it possible to quickly skip to a node by its index (like an array). Though much faster than a linked list, 
- * there is still some overhead. 
- *
- * Skip lists can be ordered or unordered. Ordered skip lists are quite fast to add and delete data, 
- * fast to search and extremely fast to traverse a range of data. 
  *
  * The following functions are for ordered lists
  *
@@ -35,14 +27,6 @@
  * json_dom_slist_find_last - finds the last instance of some data
  * json_dom_slist_delete_first_instance - deletes the first instance of something
  *
- * Unordered skip lists are fast to append data to and alright for accessing by index, though lots of 
- * index access can add up quickly. 
- *
- * json_dom_slist_append - adds a node to the end of the list. will break ordering (if that matters)
- * json_dom_slist_get_index - gets a node by index
- * json_dom_slist_delete_index - deletes a node by index
- *
- * DO NOT MIX AND MATCH ORDERED AND UNORDERED FUNCTIONS. Pick one. 
  */
 
 typedef struct _JsonDomSListNode JsonDomSListNode;
@@ -54,7 +38,6 @@ typedef struct _JsonDomSListNode {
     //JsonDomNode* node;
     void* payload;
     JsonDomSListNode* next[SLIST_MAX_LEVELS+1];
-    JsonDomSListNode* prev[SLIST_MAX_LEVELS+1];
     int width[SLIST_MAX_LEVELS+1];
 } JsonDomSListNode;
 
@@ -64,7 +47,6 @@ typedef struct _JsonDomSListNode {
  */
 typedef struct _JsonDomSList {
     JsonDomSListNode* head;
-    JsonDomSListNode* tail;
     unsigned int length;
     JsonDomAllocator* alloc;
 } JsonDomSList;
@@ -75,12 +57,6 @@ typedef struct _JsonDomSList {
  * Returns: (transfer none): the next node
  */
 const JsonDomSListNode* json_dom_slist_node_next(const JsonDomSListNode* self);
-
-/**
- * json_dom_slist_node_prev: gets the previous node in the list
- * Returns: (transfer none): the prior node
- */
-const JsonDomSListNode* json_dom_slist_node_prev(const JsonDomSListNode* self);
 
 /**
  * json_dom_slist_new: create a new skip list
@@ -97,28 +73,10 @@ JsonDomSList* json_dom_slist_new();
 void json_dom_slist_insert(JsonDomSList* self, void* payload, int (*compare)(void*, void*, void*), void* usrptr);
 
 /**
- * json_dom_slist_append: appends an element to the end of an unordered skip list
- * @payload: a pointer to the object to insert
- */
-void json_dom_slist_append(JsonDomSList* self, void* payload);
-
-/**
  * json_dom_slist_begin: returns the first node
  * Returns: (transfer none): the first node of the skip list
  */
 const JsonDomSListNode* json_dom_slist_begin(JsonDomSList* self);
-
-/**
- * json_dom_slist_end: returns the tail node which is one node past the last node with content
- * Returns: (transfer none): the tail node of the skip list
- */
-const JsonDomSListNode* json_dom_slist_end(JsonDomSList* self);
-
-/**
- * json_dom_slist_get_index: gets node payload pointer by index, like an array. 
- * Returns: (transfer none): the node data
- */
-void* json_dom_slist_get_index(JsonDomSList* self, int pos);
 
 /**
  * json_dom_slist_find_first: finds the first instance of the 'data' in the list. must be an ordered list.
@@ -149,12 +107,6 @@ const JsonDomSListNode* json_dom_slist_find_last(
  */
 void json_dom_slist_delete_first_instance(
         JsonDomSList* self, void* data, int (*compare)(void*, void*, void*), void* usrptr);
-
-/**
- * json_dom_slist_delete_index: deletes a node by index number
- * @pos: the position of the node to delete
- */
-void json_dom_slist_delete_index(JsonDomSList* self, int pos);
 
 
 #endif

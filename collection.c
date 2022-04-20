@@ -26,6 +26,33 @@ typedef struct _JsonDomCollection {
     char* name; 
 } JsonDomCollection;
 
+
+static inline int compare_id(void* lh, void* rh, void* usrptr)
+{
+    if(rh == 0) {
+        return 0;
+    }
+
+    JsonDomKey idkey;
+    idkey.value = "_id";
+    const JsonDomNode* lhnode = json_dom_node_get_member(lh, idkey);
+    const JsonDomNode* rhnode = json_dom_node_get_member(rh, idkey);
+
+    uint64_t id1 = json_dom_node_get_uint(lhnode);
+    uint64_t id2 = json_dom_node_get_uint(rhnode);
+
+    if(id1 > id2) {
+        return 1;
+    }
+    else if(id2 > id1) {
+        return -1;
+    }
+    else {
+        return 0;
+    }
+}
+
+
 static inline int compare_string_keys(void* lh, void* rh, void* usrptr) {
     JsonDomKey* idxkey = usrptr;
 
@@ -79,7 +106,7 @@ void json_dom_collection_insert_str(JsonDomCollection* self, const char* str)
             index_iter = index_iter->next;
         }
     }
-    
+
 }
 
 
@@ -91,7 +118,7 @@ unsigned int json_dom_collection_length(JsonDomCollection* self)
 void json_dom_collection_print(JsonDomCollection* self)
 {
     const JsonDomSListNode* iter = json_dom_slist_begin(self->index_head.index_list);
-    while(iter != json_dom_slist_end(self->index_head.index_list)) {
+    while(iter != 0) {
         JsonStringBuilder builder = json_string_builder_new();
         json_dom_node_stringify(iter->payload, &builder);
         printf("%s\n", json_string_builder_get(&builder));

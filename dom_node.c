@@ -24,7 +24,7 @@ typedef struct _JsonDomHead {
 
 typedef union _JsonDomNodeValue {
     int i;
-    unsigned int u;
+    uint64_t u;
     double d;
     char* str;
     bool b;
@@ -259,7 +259,7 @@ void json_dom_node_set_int(JsonDomNode* self, int value)
     self->value.i = value;
 }
 
-void json_dom_node_set_uint(JsonDomNode* self, unsigned int value)
+void json_dom_node_set_uint(JsonDomNode* self, uint64_t value)
 {
     free_object(self);
     self->type = JSON_DOM_NODE_TYPE_UINT;
@@ -318,7 +318,7 @@ int json_dom_node_get_int(const JsonDomNode* self)
     return self->value.i;
 }
 
-unsigned int json_dom_node_get_uint(const JsonDomNode* self)
+uint64_t json_dom_node_get_uint(const JsonDomNode* self)
 {
     return self->value.u;
 }
@@ -387,7 +387,7 @@ int json_dom_node_get_int_member(const JsonDomNode* self, JsonDomKey key)
     return 0;
 }
 
-void json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, unsigned int value)
+void json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, uint64_t value)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     JsonDomMemberNode* end_iter = 0;
@@ -410,7 +410,7 @@ void json_dom_node_set_uint_member(JsonDomNode* self, JsonDomKey key, unsigned i
     self->value.head.length++;
 }
 
-unsigned int json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key)
+uint64_t json_dom_node_get_uint_member(const JsonDomNode* self, JsonDomKey key)
 {
     JsonDomMemberNode* iter = self->value.head.first;
     while(iter != 0) {
