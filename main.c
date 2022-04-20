@@ -21,14 +21,17 @@ int main() {
     for(int i = 0; i < 1000000; i++) {
         sprintf(json, "{\"_id\":\"%i\"}", i);
         json_dom_collection_insert_str(collection, json);
-        printf("%i\n", i);
+        //printf("%i\n", i);
+
+        //json_dom_collection_print(collection);
     }
     end = clock();
     double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC; 
     printf("%f\n", cpu_time_used);
 
-
+    printf("\n");
     //json_dom_collection_print(collection);
+    printf("%u\n", json_dom_collection_length(collection));
 }
 
 

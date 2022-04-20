@@ -14,7 +14,7 @@ typedef struct _BlockHead {
 
 typedef union _Block {
     BlockHead head;
-    uint8_t bytes[CHUNK_SIZE];
+    uint8_t* bytes;
 } Block;
 
 struct _JsonDomAllocatorPage {
@@ -24,22 +24,30 @@ struct _JsonDomAllocatorPage {
 };
 
 
-JsonDomAllocatorPage* json_dom_allocator_page_new(size_t reserve_blocks)
+JsonDomAllocatorPage* json_dom_allocator_page_new(size_t reserve_blocks, size_t chunk_size)
 {
+    printf("making new page\n");
+    printf("reserving %u blocks\n", reserve_blocks);
+    printf("chunk size %u \n", chunk_size);
+
     JsonDomAllocatorPage* alloc = (JsonDomAllocatorPage*)malloc(sizeof(JsonDomAllocatorPage));
     alloc->n_blocks = reserve_blocks;
-    alloc->start = malloc(sizeof(Block)*reserve_blocks);
+    alloc->start = malloc(chunk_size*reserve_blocks);
     alloc->free_head = (Block*)alloc->start;
     alloc->free_head->head.next = 0;
 
+    uint8_t* n = (uint8_t*)alloc->free_head;
+    uint8_t* end = &n[chunk_size*(reserve_blocks-1)];
+
+    Block* nb;
     size_t count = 0;
-    Block* n = alloc->free_head;
-    Block* end = &n[reserve_blocks-2];
-    while(n != end) {
-        n->head.next = &n[1];
-        n = &n[1];
+    while(count++ < reserve_blocks) {
+        nb = (Block*)n;
+        nb->head.next = &n[chunk_size];
+        n = nb->head.next;
     }
-    n->head.next = 0;
+    nb = n;
+    nb->head.next = 0;
     return alloc;
 }
 
@@ -58,7 +66,6 @@ void* json_dom_allocator_page_alloc(JsonDomAllocatorPage* self)
     Block* n = self->free_head;
     if(n != 0) {
         self->free_head = (Block*)n->head.next;
-
         return n;
     }
     return 0;
@@ -79,20 +86,23 @@ struct _JsonDomAllocator{
     JsonDomAllocatorPage** pages;
     size_t n_pages;
     int current_page;
+    size_t chunk_size;
 };
 
 
-JsonDomAllocator* json_dom_allocator_new()
+JsonDomAllocator* json_dom_allocator_new(size_t chunk_size, size_t reserve_pages)
 {
-    size_t reserve_pages = 3;
+    printf("allocator new\n");
     JsonDomAllocator* allocator = (JsonDomAllocator*)malloc(sizeof(JsonDomAllocator));
     allocator->n_pages = reserve_pages;
     allocator->pages = (JsonDomAllocatorPage**)malloc(sizeof(JsonDomAllocatorPage*)*reserve_pages);
     allocator->current_page = 0;
+    allocator->chunk_size = chunk_size;
 
     for(int i = 0; i < reserve_pages; i++) {
-        allocator->pages[i] = json_dom_allocator_page_new(1024*1024*4);
+        allocator->pages[i] = json_dom_allocator_page_new(1024*1024, chunk_size);
     }
+    printf("allocator done\n");
 
     return allocator;
 }
@@ -110,7 +120,7 @@ void json_dom_allocator_delete(JsonDomAllocator* self)
 
 void* json_dom_allocator_alloc(JsonDomAllocator* self, size_t sz) 
 {
-    if(sz > CHUNK_SIZE) {
+    if(sz > self->chunk_size) {
         return malloc(sz);
     }
     else {
@@ -137,8 +147,8 @@ void* json_dom_allocator_alloc_chunk(JsonDomAllocator* self)
             self->pages = realloc(self->pages, sizeof(JsonDomAllocatorPage*)*self->n_pages);
             self->current_page = self->n_pages-1;
 
-            size_t chunks = 1024*1024*4;
-            JsonDomAllocatorPage* page = json_dom_allocator_page_new(chunks);
+            size_t chunks = 1024*1024;
+            JsonDomAllocatorPage* page = json_dom_allocator_page_new(chunks, self->chunk_size);
             self->pages[self->n_pages-1] = page;
 
             r = json_dom_allocator_page_alloc(page);

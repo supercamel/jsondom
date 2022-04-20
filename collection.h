@@ -10,6 +10,7 @@ JsonDomCollection* json_dom_collection_new(const char* name);
 
 void json_dom_collection_create_index(JsonDomCollection* self, JsonDomKey key);
 void json_dom_collection_insert_str(JsonDomCollection* self, const char* json_str);
+unsigned int json_dom_collection_length(JsonDomCollection* self);
 
 void json_dom_collection_print(JsonDomCollection* self);
 

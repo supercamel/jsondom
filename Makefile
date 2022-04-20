@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-c -O3 -Wall
-LDFLAGS= -O3
+CFLAGS=-c -Os -Wall
+LDFLAGS= -Os 
 SOURCES=$(wildcard *.c)
 HEADERS=$(wildcard *.h)
 OBJECTS=$(SOURCES:.cpp=.o)

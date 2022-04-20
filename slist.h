@@ -1,10 +1,11 @@
 #ifndef JSON_DOM_SLIST_H
 #define JSON_DOM_SLIST_H
 
+#include "allocator.h"
 #include "dom_node.h"
 
-#define SLIST_MAX_LEVELS 5 
-#define SLIST_P 0.21
+#define SLIST_MAX_LEVELS 14 
+#define SLIST_P 0.5
 
 
 /**
@@ -65,6 +66,7 @@ typedef struct _JsonDomSList {
     JsonDomSListNode* head;
     JsonDomSListNode* tail;
     unsigned int length;
+    JsonDomAllocator* alloc;
 } JsonDomSList;
 
 

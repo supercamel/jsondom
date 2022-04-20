@@ -1,6 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <time.h>
+
 #include "dom_node.h"
 #include "allocator.h"
 #include "stringbuilder.h"
@@ -70,11 +72,11 @@ uint32_t fnv1a_str(const char *str)
 
 static bool compare_keys(JsonDomKey k1, JsonDomKey k2) 
 {
-    if(k1.hash == k2.hash) {
+    //if(k1.hash == k2.hash) {
         if(strcmp(k1.value, k2.value) == 0) {
             return true;
         }
-    }
+    //}
     return false;
 }
 
@@ -124,7 +126,8 @@ void json_dom_node_delete(JsonDomNode* self)
 
 void json_dom_node_initialise()
 {
-    alloc = json_dom_allocator_new();
+    srand(time(0));
+    alloc = json_dom_allocator_new(96, 5);
 }
 
 JsonDomKey json_dom_node_key_new(const char* keyval)
@@ -134,14 +137,14 @@ JsonDomKey json_dom_node_key_new(const char* keyval)
 
     const char* cptr = keyval;
     unsigned int count = 0;
-    uint32_t hval = 0x811c9dc5;
-    const uint32_t FNV_32_PRIME = 0x01000193;
+    //uint32_t hval = 0x811c9dc5;
+    //const uint32_t FNV_32_PRIME = 0x01000193;
 
     while(*cptr != '\0') {
         char c = *cptr++;
         key.value[count++] = c;
-        hval ^= (uint32_t)c;
-        hval *= FNV_32_PRIME;
+        //hval ^= (uint32_t)c;
+        //hval *= FNV_32_PRIME;
 
         if(count > 62) {
             key.value[63] = '\0';
@@ -151,8 +154,8 @@ JsonDomKey json_dom_node_key_new(const char* keyval)
 
             while(*cptr != '\0') {
                 char c = *cptr++;
-                hval ^= (uint32_t)c;
-                hval *= FNV_32_PRIME;
+                //hval ^= (uint32_t)c;
+                //hval *= FNV_32_PRIME;
 
                 json_string_builder_append_char(&builder, c);
 
@@ -162,7 +165,7 @@ JsonDomKey json_dom_node_key_new(const char* keyval)
         }
     }
 
-    key.hash = hval;
+    //key.hash = hval;
     key.length = cptr - keyval;
     key.value[key.length] = '\0';
     return key;
