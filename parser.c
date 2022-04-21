@@ -161,9 +161,16 @@ __attribute__((always_inline)) inline const char* chug(const char* str) {
     return str;
 }
 
-JsonDomKey parse_key(const char* str) {
-    JsonDomKey key = json_dom_node_key_new_escaped(str);
-    return key;
+int parse_key(const char* str, char** key) {
+    JsonStringBuilder builder = json_string_builder_new();
+    char next;
+    do {
+        next = json_string_unescape_next(&str); 
+        json_string_builder_append_char(&builder, next);
+    } while(next != '"');
+
+    *key = json_string_builder_get(&builder);
+    return strlen(*key);
 }
 
 JsonDomNode* json_dom_parse_node(const char** pstr) 
@@ -286,8 +293,8 @@ JsonDomNode* json_dom_parse_object(const char** pstr)
     JsonDomNode* node = json_dom_node_new();
 
     json_dom_node_set_object(node);
-
-    do {
+    str = chug(str);
+    while(*str != '}') {
         str = chug(str);
         if(*str != '"') {
             printf("expected \". got %c\n", *str);
@@ -295,12 +302,9 @@ JsonDomNode* json_dom_parse_object(const char** pstr)
         }    
         str++;
 
-        JsonDomKey key = parse_key(str);
-        str += key.length;
-        if(*str++ != '"') {
-            printf("didn't get a \"\n");
-            return 0;
-        }
+        char* key;
+        int length = parse_key(str, &key);
+        str += length;
 
         str = chug(str);
 
@@ -318,7 +322,7 @@ JsonDomNode* json_dom_parse_object(const char** pstr)
             str++;
             continue;
         }
-    } while(*str != '}'); 
+    } 
 
     *pstr = str;
     return node;

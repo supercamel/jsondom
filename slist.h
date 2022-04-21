@@ -5,7 +5,6 @@
 #include "dom_node.h"
 
 #define SLIST_MAX_LEVELS 14 
-#define SLIST_P 0.5
 
 
 /**
@@ -14,18 +13,6 @@
  *
  * Skip lists are like linked lists only they have multiple links to other nodes. 
  * The additional links skip over nodes which enables the list to be traversed quickly. 
- *
- * The following functions are for ordered lists
- *
-    JsonDomNode* node = json_dom_parse("{\"idx\":40}");
-    JsonDomKey key = json_dom_node_key_new("idx");
-
-    json_dom_slist_insert(slist, node, compare, &key);
-
- * json_dom_slist_insert - inserts data into an ordered list
- * json_dom_slist_find_first - finds the first instance of some data
- * json_dom_slist_find_last - finds the last instance of some data
- * json_dom_slist_delete_first_instance - deletes the first instance of something
  *
  */
 
@@ -71,6 +58,11 @@ JsonDomSList* json_dom_slist_new();
  * @usrptr: a pointer to some user data that is passed to the compare function
  */
 void json_dom_slist_insert(JsonDomSList* self, void* payload, int (*compare)(void*, void*, void*), void* usrptr);
+
+/**
+ * json_dom_slist_prepend: pushes a new element to the front
+ */
+void json_dom_slist_prepend(JsonDomSList* self, void* payload);
 
 /**
  * json_dom_slist_begin: returns the first node

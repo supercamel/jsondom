@@ -19,6 +19,7 @@ extern JsonDomAllocator* json_dom_allocator_new(size_t chunk_size, size_t initia
 extern void json_dom_allocator_delete(JsonDomAllocator* alloc);
 extern void* json_dom_allocator_alloc(JsonDomAllocator* alloc, size_t size);
 extern void* json_dom_allocator_alloc_chunk(JsonDomAllocator* alloc);
+extern char* json_dom_allocator_strdup(JsonDomAllocator* alloc, const char* str);
 extern void json_dom_allocator_free(JsonDomAllocator* alloc, void* ptr);
 
 

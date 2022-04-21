@@ -13,21 +13,52 @@ int main() {
     json_dom_node_initialise();
 
     JsonDomCollection* collection = json_dom_collection_new("test");
+    json_dom_collection_create_index(collection, "count");
 
     clock_t start, end;
     start = clock();
 
     char json[128];
     for(int i = 0; i < 1000000; i++) {
-        sprintf(json, "{\"_id\":\"%i\"}", i);
-        json_dom_collection_insert_str(collection, json);
+        JsonDomNode* node = json_dom_node_new();
+        json_dom_node_set_object(node);
+        json_dom_node_set_int_member(node, "count", i);
+        json_dom_collection_append(collection, node);
         //printf("%i\n", i);
 
         //json_dom_collection_print(collection);
     }
+
     end = clock();
     double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC; 
     printf("%f\n", cpu_time_used);
+
+    start = clock();
+    JsonDomNode* result = json_dom_collection_find_one_uint(collection, "_id", 900000);
+    JsonStringBuilder builder = json_string_builder_new();
+    char* str = json_dom_node_stringify(result, &builder);
+    printf("%s\n", str);
+    free(str);
+
+
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC; 
+    printf("find one int: %f\n", cpu_time_used);
+
+    start = clock();
+    result = json_dom_collection_find_one_int(collection, "count", 900000);
+    printf("%lu\n", result);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC; 
+    printf("find one linear: %f\n", cpu_time_used);
+
+
+
+
+    builder = json_string_builder_new();
+    str = json_dom_node_stringify(result, &builder);
+    printf("%s\n", str);
+    free(str);
 
     printf("\n");
     //json_dom_collection_print(collection);

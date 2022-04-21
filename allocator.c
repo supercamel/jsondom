@@ -26,10 +26,6 @@ struct _JsonDomAllocatorPage {
 
 JsonDomAllocatorPage* json_dom_allocator_page_new(size_t reserve_blocks, size_t chunk_size)
 {
-    printf("making new page\n");
-    printf("reserving %u blocks\n", reserve_blocks);
-    printf("chunk size %u \n", chunk_size);
-
     JsonDomAllocatorPage* alloc = (JsonDomAllocatorPage*)malloc(sizeof(JsonDomAllocatorPage));
     alloc->n_blocks = reserve_blocks;
     alloc->start = malloc(chunk_size*reserve_blocks);
@@ -46,7 +42,7 @@ JsonDomAllocatorPage* json_dom_allocator_page_new(size_t reserve_blocks, size_t 
         nb->head.next = &n[chunk_size];
         n = nb->head.next;
     }
-    nb = n;
+    nb = (Block*)n;
     nb->head.next = 0;
     return alloc;
 }
@@ -92,7 +88,6 @@ struct _JsonDomAllocator{
 
 JsonDomAllocator* json_dom_allocator_new(size_t chunk_size, size_t reserve_pages)
 {
-    printf("allocator new\n");
     JsonDomAllocator* allocator = (JsonDomAllocator*)malloc(sizeof(JsonDomAllocator));
     allocator->n_pages = reserve_pages;
     allocator->pages = (JsonDomAllocatorPage**)malloc(sizeof(JsonDomAllocatorPage*)*reserve_pages);
@@ -102,7 +97,6 @@ JsonDomAllocator* json_dom_allocator_new(size_t chunk_size, size_t reserve_pages
     for(int i = 0; i < reserve_pages; i++) {
         allocator->pages[i] = json_dom_allocator_page_new(1024*1024, chunk_size);
     }
-    printf("allocator done\n");
 
     return allocator;
 }
@@ -158,6 +152,13 @@ void* json_dom_allocator_alloc_chunk(JsonDomAllocator* self)
     return r;
 }
 
+
+char* json_dom_allocator_strdup(JsonDomAllocator* alloc, const char* str)
+{
+    char* dest = json_dom_allocator_alloc(alloc, strlen(str));
+    strcpy(dest, str);
+    return dest; 
+}
 
 void json_dom_allocator_free(JsonDomAllocator* self, void* ptr)
 {
