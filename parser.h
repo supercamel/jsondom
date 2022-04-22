@@ -3,7 +3,7 @@
 
 #include "dom_node.h"
 
-
+const char* json_dom_parse_chug(const char* str);
 JsonDomNode* json_dom_parse_array(const char** str);
 JsonDomNode* json_dom_parse_object(const char** str);
 

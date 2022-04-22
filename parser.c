@@ -142,7 +142,7 @@ static inline ParserNumericResult parse_numeric(const char* p, const char** end)
 }
 
 
-__attribute__((always_inline)) inline bool whitespace(char c) {
+inline bool whitespace(char c) {
     switch(c) {
         case ' ':
         case '\t':
@@ -153,7 +153,7 @@ __attribute__((always_inline)) inline bool whitespace(char c) {
     }
 }
 
-__attribute__((always_inline)) inline const char* chug(const char* str) {
+const char* json_dom_parse_chug(const char* str) {
     char c = *str;
     while(whitespace(c)) {
         c = *++str;

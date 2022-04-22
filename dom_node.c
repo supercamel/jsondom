@@ -579,6 +579,11 @@ const JsonDomNode* json_dom_node_get_index(const JsonDomNode* self, unsigned int
     return 0;
 }
 
+unsigned int json_dom_node_length(const JsonDomNode* self)
+{
+    return self->value.head.length;
+}
+
 char* json_dom_node_stringify(const JsonDomNode* self, JsonStringBuilder* builder)
 {
     switch(self->type) {

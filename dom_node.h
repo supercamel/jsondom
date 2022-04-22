@@ -71,6 +71,7 @@ bool            json_dom_node_has_member(const JsonDomNode* self, const char* ke
 void json_dom_node_push_back(JsonDomNode* self, JsonDomNode* other);
 void json_dom_node_pop_back(JsonDomNode* self);
 const JsonDomNode* json_dom_node_get_index(const JsonDomNode* self, unsigned int idx);
+unsigned int json_dom_node_length(const JsonDomNode* self);
 
 char* json_dom_node_stringify(const JsonDomNode* self, JsonStringBuilder* builder);
 
